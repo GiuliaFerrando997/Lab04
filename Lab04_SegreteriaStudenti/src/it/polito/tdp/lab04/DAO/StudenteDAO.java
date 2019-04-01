@@ -13,30 +13,34 @@ import it.polito.tdp.lab04.model.Studente;
 public class StudenteDAO {
 
 	public String getStudente(int matr) {
-		String sql = "SELECT cognome, nome FROM studente WHERE matricola=? ";
-		String nome = null;
-		String cognome = null;
+		
+		String nome = "";
+		String cognome = "";
 		Connection conn = ConnectDB.getConnection();
 		List<Corso> tuttiCorsi = new LinkedList<>();
 			try {
-				
+				String sql = "SELECT cognome, nome FROM studente WHERE matricola=? ";
 				PreparedStatement st = conn.prepareStatement(sql);
-				ResultSet rs = st.executeQuery();
 				st.setInt(1, matr);
+				ResultSet rs = st.executeQuery();
 				
+				while(rs.next()) {
 				cognome=rs.getString("cognome");
 				nome=rs.getString("nome");
+				}
 				
 				conn.close();
 				
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			
-		return cognome + " "+nome;
+			if(nome.equals("") && cognome.equals(""))
+				return null;
+			else 
+				return cognome + " "+nome;
 	}
 
-	public List<Studente> getStudentiPerCorso(Corso corso) {;
+	public List<Studente> getStudentiPerCorso(String corso) {;
 		String sql = "SELECT s.matricola, cognome, nome, CDS FROM studente as s, iscrizione as i "
 				+ "WHERE s.matricola=i.matricola  AND i.codins=?";
 		List<Studente> stud = new LinkedList<>();
@@ -45,8 +49,9 @@ public class StudenteDAO {
 		try {
 			
 			PreparedStatement st = conn.prepareStatement(sql);
+			st.setString(1, corso);
 			ResultSet rs = st.executeQuery();
-			st.setString(1, corso.getCodins());
+			
 			
 			while(rs.next()) {
 				Studente s = new Studente(rs.getInt("matricola"),

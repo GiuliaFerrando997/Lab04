@@ -18,13 +18,16 @@ public class SegreteriaStudentiController {
 	
 	SegreteriaStudentiModel elenco;
 	private SegreteriaStudentiModel model;
+	private List<String> pregare = new LinkedList<>();
+		
 	
 	public void setModel(SegreteriaStudentiModel model) {
 		this.model = model;
 	}
+	
 
     @FXML
-    private ComboBox<Corso> comboBoxCorsi;
+    private ComboBox<String> comboBoxCorsi;
 
     @FXML
     private Button btmCercaIscritti;
@@ -64,20 +67,24 @@ public class SegreteriaStudentiController {
 	    		txtRisultati.setText("Lo studente non è presente");
 	    	}
 	    	else {
-		    		if(comboBoxCorsi.getValue()==null) {
-			    	List<Corso> corsi = new LinkedList<>();
-			    	corsi.addAll(model.cercaCorsiPerStudente(m));
-			    	if(corsi==null)
+		    		if(comboBoxCorsi.getValue()==null ||
+		    				comboBoxCorsi.getValue().equals("")) {
+			    	List<Corso> corsi1 = new LinkedList<>();
+			    	corsi1.addAll(model.cercaCorsiPerStudente(m));
+			    	if(corsi1==null)
 			    		txtRisultati.setText("Lo studente non è iscritto ad alcun corso");
 			    	else {
-			    		for(Corso c : corsi) {
-			    			txtRisultati.setText(c.toString()+"\n");
+			    		String s = "";
+			    		for(Corso c : corsi1) {
+			    			s+=(c.toString()+"\n");
 			    		}
+			    		txtRisultati.setText(s);
 			    	}
 		    	}
 		    	else {
-		    		Corso corso = comboBoxCorsi.getValue();
-		    		boolean iscritto = model.cercaCorsoPerStudente(m, corso);
+		    		String corso = comboBoxCorsi.getValue();
+		    		String corsi = corso.split(" ")[0];
+		    		boolean iscritto = model.cercaCorsoPerStudente(m, corsi);
 		    		if(iscritto==true)
 		    			txtRisultati.setText("Lo studente è iscritto al corso");
 		    		else 
@@ -91,20 +98,24 @@ public class SegreteriaStudentiController {
 
     @FXML
     void cercaIscritti(ActionEvent event) {
-    	Corso corso = comboBoxCorsi.getValue();
-    	List<Studente> studenti = new LinkedList<>();
-    	if(corso==null)
-    		txtRisultati.setText("Non hai selezionato alcun corso");
+    	String corso = comboBoxCorsi.getValue();
+    	String corsi = "";
+    	String risultato = "";
+    	if(corso.equals(""))
+    		txtRisultati.setText("Seleziona un corso!");
     	else {
-    		studenti.addAll(model.cercaStudentePerCorso(corso));
-    		if(studenti==null) {
-    			txtRisultati.setText("Nessuno studente è iscritto al corso");
-    		}
-    		else {
-	    		for(Studente s : studenti) {
-	    			txtRisultati.setText(s.toString());
+    		corsi = corso.split(" ")[0];
+	    	List<Studente> studenti = new LinkedList<>();
+	    		studenti.addAll(model.cercaStudentePerCorso(corsi));
+	    		if(studenti==null) {
+	    			txtRisultati.setText("Nessuno studente è iscritto al corso");
 	    		}
-    		}
+	    		else {
+		    		for(Studente s : studenti) {
+		    			risultato+=s.toString()+"\n";
+		    		}
+		    		txtRisultati.setText(risultato);
+	    		}
     	}
 
     }
@@ -134,14 +145,24 @@ public class SegreteriaStudentiController {
     	txtCognome.clear();
     	txtMatricola.clear();
     	txtRisultati.clear();
+    	List<String> s = new LinkedList<>();
+    	s.addAll(this.model.getCorsi());
+    	comboBoxCorsi.getItems().addAll(s);	
     }
+    
+   
     
     @FXML
 	public void initialize() throws IOException{
-    	List<Corso> tuttiCorsi = new LinkedList<>();
-    	tuttiCorsi.addAll(model.getCorsi());
-		comboBoxCorsi.getItems().addAll(tuttiCorsi);
-		comboBoxCorsi.getItems().add(null);
+    	comboBoxCorsi.getItems().add("");
 	}
+    
+    
+    
+	
+	
+
+	
+  
 
 }

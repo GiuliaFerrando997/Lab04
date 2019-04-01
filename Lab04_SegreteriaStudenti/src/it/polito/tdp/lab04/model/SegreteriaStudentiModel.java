@@ -8,7 +8,7 @@ import it.polito.tdp.lab04.DAO.StudenteDAO;
 
 public class SegreteriaStudentiModel {
 	
-	public List<Corso> getCorsi(){
+	public List<String> getCorsi(){
 		CorsoDAO dao = new CorsoDAO();
 		return dao.getCorsi();
 	}
@@ -18,7 +18,7 @@ public class SegreteriaStudentiModel {
 		return dao.getStudente(matricola);
 	}
 
-	public List<Studente> cercaStudentePerCorso(Corso corso) {
+	public List<Studente> cercaStudentePerCorso(String corso) {
 		StudenteDAO dao = new StudenteDAO();
 		return dao.getStudentiPerCorso(corso);
 		
@@ -29,7 +29,7 @@ public class SegreteriaStudentiModel {
 		return dao.getCorsiPerStudente(matricola);
 	}
 
-	public boolean cercaCorsoPerStudente(int matricola, Corso corso) {
+	public boolean cercaCorsoPerStudente(int matricola, String corso) {
 		CorsoDAO dao = new CorsoDAO();
 		return dao.getCorsiPerStudente(matricola, corso);
 	}

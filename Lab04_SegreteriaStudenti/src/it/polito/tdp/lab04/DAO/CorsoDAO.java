@@ -14,9 +14,9 @@ import it.polito.tdp.lab04.model.Studente;
 public class CorsoDAO {
 	
 	
-	public List<Corso> getCorsi(){
+	public List<String> getCorsi(){
 	Connection conn = ConnectDB.getConnection();
-	List<Corso> tuttiCorsi = new LinkedList<>();
+	List<String> tuttiCorsi = new LinkedList<>();
 		try {
 			String sql = "SELECT * FROM corso";
 			PreparedStatement st = conn.prepareStatement(sql);
@@ -27,7 +27,7 @@ public class CorsoDAO {
 						rs.getInt("crediti"),
 						rs.getString("nome"),
 						rs.getInt("pd"));
-				tuttiCorsi.add(c);
+				tuttiCorsi.add(c.getCodins()+" "+c.getNome());
 			}
 		
 			conn.close();
@@ -49,8 +49,9 @@ public class CorsoDAO {
 			try {
 				
 				PreparedStatement st = conn.prepareStatement(sql);
-				ResultSet rs = st.executeQuery();
 				st.setInt(1, matricola);
+				ResultSet rs = st.executeQuery();
+				
 				
 				while(rs.next()) {
 					Corso c = new Corso(rs.getString("codins"),
@@ -69,18 +70,22 @@ public class CorsoDAO {
 			return corsi;
 	}
 
-	public boolean getCorsiPerStudente(int matricola, Corso corso) {
+	public boolean getCorsiPerStudente(int matricola, String corso) {
 		Connection conn = ConnectDB.getConnection();
+		String codice = null;
 		boolean iscritto = false;
 		String sql = "SELECT c.codins, crediti, nome, pd FROM corso AS c, iscrizione AS i WHERE c.codins=i.codins AND i.matricola=? AND i.codins=?";
 			try {
 				
 				PreparedStatement st = conn.prepareStatement(sql);
-				ResultSet rs = st.executeQuery();
 				st.setInt(1, matricola);
-				st.setString(2, corso.getCodins());
+				st.setString(2, corso);
+				ResultSet rs = st.executeQuery();
 				
-				if(rs!=null)
+				while(rs.next()) {
+					codice=rs.getString("codins");
+				}
+				if(codice!=null && !codice.equals(""))
 					iscritto=true;
 				
 				conn.close();

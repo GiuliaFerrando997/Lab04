@@ -18,9 +18,8 @@ public class Main extends Application {
 			Scene scene = new Scene(root);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 
-			SegreteriaStudentiController controller = (SegreteriaStudentiController)loader.getController();
 			SegreteriaStudentiModel model = new SegreteriaStudentiModel();
-	
+			SegreteriaStudentiController controller = (SegreteriaStudentiController)loader.getController();
 			controller.setModel(model);
 
 			primaryStage.setScene(scene);
