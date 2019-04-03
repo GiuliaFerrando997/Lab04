@@ -74,8 +74,12 @@ public class Corso {
 
 	@Override
 	public String toString() {
-		return String.format("Corso [codins=%s, crediti=%s, nome=%s, pd=%s]", codins, crediti, nome, pd);
+		
+		StringBuilder builder = new StringBuilder();
+		return String.format("%15s %10d %15s %15s\n",codins,crediti,nome,pd);
 	}
+
+	
 	
 	
 

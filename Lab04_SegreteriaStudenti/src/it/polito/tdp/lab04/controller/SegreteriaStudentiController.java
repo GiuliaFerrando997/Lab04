@@ -37,6 +37,7 @@ public class SegreteriaStudentiController {
 
     @FXML
     private Button btmCercaMatricola;
+    
 
     @FXML
     private TextField txtNome;
@@ -82,32 +83,40 @@ public class SegreteriaStudentiController {
 			    	}
 		    	}
 		    	else {
-		    		String corso = comboBoxCorsi.getValue();
-		    		String corsi = corso.split(" ")[0];
-		    		boolean iscritto = model.cercaCorsoPerStudente(m, corsi);
-		    		if(iscritto==true)
-		    			txtRisultati.setText("Lo studente è iscritto al corso");
-		    		else 
-		    			txtRisultati.setText("Lo studente non è iscritto al corso");
+		    		this.eIscritto(m);
+		    		
 		    	}
 	    	}
 	    	
     	}
 
     }
+    
+    public boolean eIscritto(int m) {
+    	String corso = comboBoxCorsi.getValue();
+		String corsi = corso.split(" ")[0];
+		boolean iscritto = model.cercaCorsoPerStudente(m, corsi);
+		if(iscritto==true)
+			txtRisultati.setText("Lo studente è già iscritto al corso");
+		else 
+			txtRisultati.setText("Lo studente non è iscritto al corso");
+		return iscritto;
+		
+	
+    }
 
     @FXML
     void cercaIscritti(ActionEvent event) {
     	String corso = comboBoxCorsi.getValue();
     	String corsi = "";
-    	String risultato = "";
+    	corsi = corso.split(" ")[0];
+    	String risultato = "Gli iscritti al corso " +corso+" sono:\n";
+    	List<Studente> studenti = new LinkedList<>();
     	if(corso.equals(""))
     		txtRisultati.setText("Seleziona un corso!");
     	else {
-    		corsi = corso.split(" ")[0];
-	    	List<Studente> studenti = new LinkedList<>();
 	    		studenti.addAll(model.cercaStudentePerCorso(corsi));
-	    		if(studenti==null) {
+	    		if(studenti.size()==0) {
 	    			txtRisultati.setText("Nessuno studente è iscritto al corso");
 	    		}
 	    		else {
@@ -136,6 +145,28 @@ public class SegreteriaStudentiController {
 
     @FXML
     void iscrivi(ActionEvent event) {
+    	String matricola = (txtMatricola.getText());
+    	String corso = comboBoxCorsi.getValue();
+    	int m = -1;
+    	boolean presente = false;
+    	if(corso.equals(" ")) {
+    		txtRisultati.setText("Selezionare il corso");
+    	}
+    	else {
+    		corso=corso.split(" ")[0];
+    		if(!matricola.matches("[0-9]*")) {
+        		txtRisultati.setText("Inserisci una matricola valida");
+    		}
+    		else {
+    			m=Integer.parseInt(matricola);
+    			presente = this.eIscritto(m);
+    			if(presente == false) {
+    				model.aggiungiStudente(m, corso);
+    				txtRisultati.setText("Lo studente è stato iscritto");
+    			}
+    		}
+    		
+    	}
 
     }
 
@@ -145,19 +176,28 @@ public class SegreteriaStudentiController {
     	txtCognome.clear();
     	txtMatricola.clear();
     	txtRisultati.clear();
-    	List<String> s = new LinkedList<>();
-    	s.addAll(this.model.getCorsi());
-    	comboBoxCorsi.getItems().addAll(s);	
+    	 List<String> s = new LinkedList<>();
+     	s.addAll(this.model.getCorsi());
+     	comboBoxCorsi.getItems().addAll(s);	
     }
     
-   
     
     @FXML
-	public void initialize() throws IOException{
-    	comboBoxCorsi.getItems().add("");
-	}
-    
-    
+    void initialize() {
+        assert comboBoxCorsi != null : "fx:id=\"comboBoxCorsi\" was not injected: check your FXML file 'SegreteriaStudenti.fxml'.";
+        assert btmCercaIscritti != null : "fx:id=\"btmCercaIscritti\" was not injected: check your FXML file 'SegreteriaStudenti.fxml'.";
+        assert txtMatricola != null : "fx:id=\"txtMatricola\" was not injected: check your FXML file 'SegreteriaStudenti.fxml'.";
+        assert btmCercaMatricola != null : "fx:id=\"btmCercaMatricola\" was not injected: check your FXML file 'SegreteriaStudenti.fxml'.";
+        assert txtNome != null : "fx:id=\"txtNome\" was not injected: check your FXML file 'SegreteriaStudenti.fxml'.";
+        assert txtCognome != null : "fx:id=\"txtCognome\" was not injected: check your FXML file 'SegreteriaStudenti.fxml'.";
+        assert btmCercaCorsi != null : "fx:id=\"btmCercaCorsi\" was not injected: check your FXML file 'SegreteriaStudenti.fxml'.";
+        assert btmIscrivi != null : "fx:id=\"btmIscrivi\" was not injected: check your FXML file 'SegreteriaStudenti.fxml'.";
+        assert txtRisultati != null : "fx:id=\"txtRisultati\" was not injected: check your FXML file 'SegreteriaStudenti.fxml'.";
+        assert btmReset != null : "fx:id=\"btmReset\" was not injected: check your FXML file 'SegreteriaStudenti.fxml'.";
+        comboBoxCorsi.getItems().add("");
+
+
+    }
     
 	
 	

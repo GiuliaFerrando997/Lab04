@@ -41,13 +41,12 @@ public class StudenteDAO {
 	}
 
 	public List<Studente> getStudentiPerCorso(String corso) {;
-		String sql = "SELECT s.matricola, cognome, nome, CDS FROM studente as s, iscrizione as i "
-				+ "WHERE s.matricola=i.matricola  AND i.codins=?";
+		
 		List<Studente> stud = new LinkedList<>();
 		Connection conn = ConnectDB.getConnection();
 		
 		try {
-			
+			String sql = "SELECT s.matricola, cognome, nome, CDS FROM studente as s, iscrizione as i WHERE s.matricola=i.matricola  AND i.codins=?";
 			PreparedStatement st = conn.prepareStatement(sql);
 			st.setString(1, corso);
 			ResultSet rs = st.executeQuery();
@@ -58,6 +57,7 @@ public class StudenteDAO {
 						rs.getString("cognome"),
 						rs.getString("nome"),
 						rs.getString("CDS"));
+				stud.add(s);
 			}
 			
 			conn.close();
@@ -68,5 +68,26 @@ public class StudenteDAO {
 		
 		return stud;
 	}
+
+	public void aggiungiStudente(int m, String corso) {
+		
+		Connection conn = ConnectDB.getConnection();
+		 
+		try {
+			String sql = "INSERT INTO iscrizione (matricola, codins) VALUES (?, ?)";
+			PreparedStatement st = conn.prepareStatement(sql);
+			st.setInt(1,m);
+			st.setString(2,corso);
+			
+			ResultSet rs = st.executeQuery();
+		
+		conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		
+	}
+
+	
 
 }

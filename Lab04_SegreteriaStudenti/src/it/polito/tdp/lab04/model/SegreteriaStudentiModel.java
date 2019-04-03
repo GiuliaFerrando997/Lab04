@@ -34,6 +34,13 @@ public class SegreteriaStudentiModel {
 		return dao.getCorsiPerStudente(matricola, corso);
 	}
 
+	public void aggiungiStudente(int m, String corso) {
+		StudenteDAO dao = new StudenteDAO();
+		dao.aggiungiStudente(m, corso);
+	}
+
+	
+
 	
 
 }

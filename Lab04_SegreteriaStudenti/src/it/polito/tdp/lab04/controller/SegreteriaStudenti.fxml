@@ -6,9 +6,12 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.effect.Reflection?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.LinearGradient?>
+<?import javafx.scene.paint.Stop?>
 
 <BorderPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polito.tdp.lab04.controller.SegreteriaStudentiController">
    <top>
@@ -51,10 +54,22 @@
                         <Insets right="18.0" />
                      </HBox.margin>
                   </TextField>
-                  <Button fx:id="btmCercaMatricola" mnemonicParsing="false" onAction="#cercaMatricola" text="V">
+                  <Button fx:id="btmCercaMatricola" mnemonicParsing="false" onAction="#cercaMatricola" style="-fx-background-color: #26a426;" text="V">
                      <HBox.margin>
                         <Insets right="18.0" />
+         
                      </HBox.margin>
+                     <textFill>
+                        <LinearGradient endX="1.0" endY="1.0" startX="0.024271844660194164">
+                           <stops>
+                              <Stop color="BLACK" />
+                              <Stop color="#26a426" offset="1.0" />
+                           </stops>
+                        </LinearGradient>
+                     </textFill>
+                     <effect>
+                        <Reflection />
+                     </effect>
                   </Button>
                   <TextField fx:id="txtNome" editable="false" promptText="Nome" />
                   <TextField fx:id="txtCognome" editable="false" promptText="Cognome">
