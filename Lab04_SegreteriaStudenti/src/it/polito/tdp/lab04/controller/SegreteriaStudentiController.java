@@ -18,15 +18,15 @@ public class SegreteriaStudentiController {
 	
 	SegreteriaStudentiModel elenco;
 	private SegreteriaStudentiModel model;
-	private List<String> pregare = new LinkedList<>();
 		
 	
 	public void setModel(SegreteriaStudentiModel model) {
 		this.model = model;
+		this.setComboItems();
 	}
-	
 
-    @FXML
+
+	@FXML
     private ComboBox<String> comboBoxCorsi;
 
     @FXML
@@ -59,8 +59,9 @@ public class SegreteriaStudentiController {
 
     @FXML
     void cercaCorsi(ActionEvent event) {
+    	try {
     	String matricola = (txtMatricola.getText());
-    	if(!matricola.matches("[0-9]*"))
+    	if(!matricola.matches("[0-9]*") || matricola==null || matricola.equals(""))
     		txtRisultati.setText("Inserisci una matricola valida");
     	else {
 	    	int m = Integer.parseInt(matricola);
@@ -75,11 +76,16 @@ public class SegreteriaStudentiController {
 			    	if(corsi1==null)
 			    		txtRisultati.setText("Lo studente non è iscritto ad alcun corso");
 			    	else {
-			    		String s = "";
+			    		StringBuilder sb = new StringBuilder();
 			    		for(Corso c : corsi1) {
-			    			s+=(c.toString()+"\n");
+			    			sb.append(String.format("%-10s", c.getCodins()));
+			    			sb.append(String.format("%-8s", c.getCrediti()));
+			    			sb.append(String.format("%-40s", c.getNome()));
+			    			sb.append(String.format("%-10s", c.getPd()));
+			    			sb.append("\n");
+			    			
 			    		}
-			    		txtRisultati.setText(s);
+			    		txtRisultati.appendText(sb.toString());
 			    	}
 		    	}
 		    	else {
@@ -88,6 +94,11 @@ public class SegreteriaStudentiController {
 		    	}
 	    	}
 	    	
+    	}
+    	} catch (NumberFormatException e) {
+    		txtRisultati.setText("Inserire una matricola nel formato corretto");
+    	} catch (RuntimeException e) {
+    		txtRisultati.setText("Errore di connessione al database!");
     	}
 
     }
@@ -107,10 +118,12 @@ public class SegreteriaStudentiController {
 
     @FXML
     void cercaIscritti(ActionEvent event) {
+    	try {
     	String corso = comboBoxCorsi.getValue();
     	String corsi = "";
     	corsi = corso.split(" ")[0];
     	String risultato = "Gli iscritti al corso " +corso+" sono:\n";
+    	StringBuilder sb = new StringBuilder();
     	List<Studente> studenti = new LinkedList<>();
     	if(corso.equals(""))
     		txtRisultati.setText("Seleziona un corso!");
@@ -121,30 +134,46 @@ public class SegreteriaStudentiController {
 	    		}
 	    		else {
 		    		for(Studente s : studenti) {
-		    			risultato+=s.toString()+"\n";
+		    			sb.append(String.format("%-10s ", s.getMatricola()));
+		    			sb.append(String.format("%-20s ", s.getCognome()));
+		    			sb.append(String.format("%-20s ", s.getNome()));
+		    			sb.append(String.format("%-10s ", s.getCDS()));
+		    			sb.append("\n");
 		    		}
-		    		txtRisultati.setText(risultato);
+		    		txtRisultati.setText(risultato+sb.toString());
 	    		}
+    	}
+    	}catch(RuntimeException e) {
+        	txtRisultati.setText("Errore di connessione al Database");
     	}
 
     }
 
     @FXML
     void cercaMatricola(ActionEvent event) {
+    	try {
     	String matricola = (txtMatricola.getText());
-    	if(!matricola.matches("[0-9]*"))
+    	if(!matricola.matches("[0-9]*")|| matricola==null || matricola.equals(""))
     		txtRisultati.setText("Inserisci una matricola valida");
     	else {
 	    	int m = Integer.parseInt(matricola);
     		String stud = model.cercaStudente(m);
+    		if(stud==null)
+    			txtRisultati.setText("Matricola non presente");
+    		else {
 	    	String[] ris = stud.split(" ");
 	    	txtNome.setText(ris[1]);
 	    	txtCognome.setText(ris[0]);
+    		}
     	}
+    } catch(RuntimeException e) {
+    	txtRisultati.setText("Errore di connessione al Database");
+    }
     }
 
     @FXML
     void iscrivi(ActionEvent event) {
+    	try {
     	String matricola = (txtMatricola.getText());
     	String corso = comboBoxCorsi.getValue();
     	int m = -1;
@@ -154,20 +183,24 @@ public class SegreteriaStudentiController {
     	}
     	else {
     		corso=corso.split(" ")[0];
-    		if(!matricola.matches("[0-9]*")) {
+    		if(!matricola.matches("[0-9]*") || matricola==null || matricola.equals("")) {
         		txtRisultati.setText("Inserisci una matricola valida");
     		}
     		else {
     			m=Integer.parseInt(matricola);
     			presente = this.eIscritto(m);
     			if(presente == false) {
-    				model.aggiungiStudente(m, corso);
-    				txtRisultati.setText("Lo studente è stato iscritto");
+    				if(model.aggiungiStudente(m, corso)==true)
+    					txtRisultati.setText("Lo studente è stato iscritto");
+    				else
+    					txtRisultati.setText("Non è stato possibile aggiungere lo studente");
     			}
     		}
     		
     	}
-
+    	}catch(RuntimeException e) {
+        	txtRisultati.setText("Errore di connessione al Database");
+    }
     }
 
     @FXML
@@ -175,11 +208,15 @@ public class SegreteriaStudentiController {
     	txtNome.clear();
     	txtCognome.clear();
     	txtMatricola.clear();
-    	txtRisultati.clear();
-    	 List<String> s = new LinkedList<>();
-     	s.addAll(this.model.getCorsi());
-     	comboBoxCorsi.getItems().addAll(s);	
+    	txtRisultati.clear();	
     }
+    
+    private void setComboItems() {
+    	List<String> s = new LinkedList<>();
+     	s.addAll(this.model.getCorsi());
+     	comboBoxCorsi.getItems().add("");
+     	comboBoxCorsi.getItems().addAll(s);
+  	}
     
     
     @FXML
@@ -194,9 +231,8 @@ public class SegreteriaStudentiController {
         assert btmIscrivi != null : "fx:id=\"btmIscrivi\" was not injected: check your FXML file 'SegreteriaStudenti.fxml'.";
         assert txtRisultati != null : "fx:id=\"txtRisultati\" was not injected: check your FXML file 'SegreteriaStudenti.fxml'.";
         assert btmReset != null : "fx:id=\"btmReset\" was not injected: check your FXML file 'SegreteriaStudenti.fxml'.";
-        comboBoxCorsi.getItems().add("");
-
-
+        
+       txtRisultati.setStyle("-fx-font-family: monospace");
     }
     
 	

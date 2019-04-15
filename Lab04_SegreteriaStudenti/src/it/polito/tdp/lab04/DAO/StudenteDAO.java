@@ -69,9 +69,10 @@ public class StudenteDAO {
 		return stud;
 	}
 
-	public void aggiungiStudente(int m, String corso) {
+	public boolean aggiungiStudente(int m, String corso) {
 		
 		Connection conn = ConnectDB.getConnection();
+		boolean returnValue = false;
 		 
 		try {
 			String sql = "INSERT INTO iscrizione (matricola, codins) VALUES (?, ?)";
@@ -79,12 +80,16 @@ public class StudenteDAO {
 			st.setInt(1,m);
 			st.setString(2,corso);
 			
-			ResultSet rs = st.executeQuery();
+			int rs = st.executeUpdate();
+			if(rs==1)
+				returnValue = true;
 		
 		conn.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
+				throw new RuntimeException("Errore DB");
 			}
+		return returnValue;
 		
 	}
 

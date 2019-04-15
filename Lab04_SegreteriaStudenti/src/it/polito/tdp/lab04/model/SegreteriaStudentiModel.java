@@ -8,35 +8,37 @@ import it.polito.tdp.lab04.DAO.StudenteDAO;
 
 public class SegreteriaStudentiModel {
 	
-	public List<String> getCorsi(){
+	private CorsoDAO dao;
+	private StudenteDAO ddao = new StudenteDAO();
+	
+	public SegreteriaStudentiModel() {
 		CorsoDAO dao = new CorsoDAO();
+		StudenteDAO ddao = new StudenteDAO();
+	}
+	
+	public List<String> getCorsi(){
 		return dao.getCorsi();
 	}
 
 	public String cercaStudente(int matricola) {
-		StudenteDAO dao = new StudenteDAO();
-		return dao.getStudente(matricola);
+		return ddao.getStudente(matricola);
 	}
 
 	public List<Studente> cercaStudentePerCorso(String corso) {
-		StudenteDAO dao = new StudenteDAO();
-		return dao.getStudentiPerCorso(corso);
+		return ddao.getStudentiPerCorso(corso);
 		
 	}
 
 	public List<Corso> cercaCorsiPerStudente(int matricola) {
-		CorsoDAO dao = new CorsoDAO();
 		return dao.getCorsiPerStudente(matricola);
 	}
 
 	public boolean cercaCorsoPerStudente(int matricola, String corso) {
-		CorsoDAO dao = new CorsoDAO();
 		return dao.getCorsiPerStudente(matricola, corso);
 	}
 
-	public void aggiungiStudente(int m, String corso) {
-		StudenteDAO dao = new StudenteDAO();
-		dao.aggiungiStudente(m, corso);
+	public boolean aggiungiStudente(int m, String corso) {
+		return ddao.aggiungiStudente(m, corso);
 	}
 
 	
